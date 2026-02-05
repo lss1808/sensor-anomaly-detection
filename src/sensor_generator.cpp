@@ -1,30 +1,24 @@
-#include <iostream>
-#include <fstream>
 #include <random>
+#include <chrono>
 
-int main() {
-    std::ofstream file("data/sensor_data.csv");
+double generateSensorValue() {
+    static std::default_random_engine generator(
+        std::chrono::system_clock::now().time_since_epoch().count()
+    );
 
-    if (!file.is_open()) {
-        std::cerr << "Erro ao criar arquivo de dados.\n";
-        return 1;
+    static std::normal_distribution<double> noise(0.0, 1.5);
+    static int counter = 0;
+
+    counter++;
+
+    // Valor nominal do sensor
+    double value = 100.0 + noise(generator);
+
+    // Pico rápido a cada 50 ciclos
+    if (counter % 50 == 0) {
+        value = 200.0;
     }
 
-    std::default_random_engine generator;
-    std::normal_distribution<double> normal_dist(70.0, 2.0); // média 70, desvio 2
-
-    for (int i = 0; i < 500; i++) {
-        double value = normal_dist(generator);
-
-        // Inserir anomalias propositalmente
-        if (i == 150 || i == 320) {
-            value = 120.0; // pico anormal
-        }
-
-        file << value << "\n";
-    }
-
-    file.close();
-    std::cout << "Dados do sensor gerados com sucesso.\n";
-    return 0;
+    return value;
 }
+
