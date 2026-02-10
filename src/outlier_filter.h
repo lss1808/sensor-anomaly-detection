@@ -1,19 +1,18 @@
 #ifndef OUTLIER_FILTER_H
 #define OUTLIER_FILTER_H
 
+#include <deque>
 #include <vector>
 
 class OutlierFilter {
-public:
-    OutlierFilter(int janela, double limite_z);
-    bool isAnomaly(const std::vector<double>& janela, double valor);
-
 private:
-    int tamanho_janela;
-    double limite_z;
+    std::deque<double> janela;
+    int tamanhoJanela;
+    double limiteZ;
 
-    double media(const std::vector<double>& dados);
-    double desvio(const std::vector<double>& dados, double m);
+public:
+    OutlierFilter(int tamanho = 30, double limite = 2.5);
+    bool isAnomaly(double valor);
 };
 
 #endif

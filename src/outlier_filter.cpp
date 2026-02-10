@@ -1,30 +1,27 @@
 #include "outlier_filter.h"
 #include <cmath>
+#include <numeric>
 
-OutlierFilter::OutlierFilter(int janela, double limite_z)
-    : tamanho_janela(janela), limite_z(limite_z) {}
+OutlierFilter::OutlierFilter(int tamanho, double limite)
+    : tamanhoJanela(tamanho), limiteZ(limite) {}
 
-double OutlierFilter::media(const std::vector<double>& dados) {
+bool OutlierFilter::isAnomaly(double valor) {
+    janela.push_back(valor);
+
+    if (janela.size() < (size_t)tamanhoJanela)
+        return false;
+
+    double media = std::accumulate(janela.begin(), janela.end(), 0.0) / janela.size();
+
     double soma = 0.0;
-    for (double v : dados) soma += v;
-    return soma / dados.size();
-}
+    for (double v : janela)
+        soma += (v - media) * (v - media);
 
-double OutlierFilter::desvio(const std::vector<double>& dados, double m) {
-    double soma = 0.0;
-    for (double v : dados)
-        soma += (v - m) * (v - m);
-    return std::sqrt(soma / dados.size());
-}
+    double desvio = std::sqrt(soma / janela.size());
 
-bool OutlierFilter::isAnomaly(const std::vector<double>& janela, double valor) {
-    if (janela.size() < tamanho_janela) return false;
+    if (janela.size() > (size_t)tamanhoJanela)
+        janela.pop_front();
 
-    double m = media(janela);
-    double d = desvio(janela, m);
-
-    if (d == 0.0) return false;
-
-    double z = (valor - m) / d;
-    return std::abs(z) > limite_z;
+    double z = std::abs((valor - media) / desvio);
+    return z > limiteZ;
 }
