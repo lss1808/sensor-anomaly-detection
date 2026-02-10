@@ -2,15 +2,10 @@
 #include <cmath>
 #include <numeric>
 
-OutlierFilter::OutlierFilter(int tamanho, double limite)
-    : tamanhoJanela(tamanho), limiteZ(limite) {}
+OutlierFilter::OutlierFilter(int janela, double limite)
+    : tamanhoJanela(janela), limiteZ(limite) {}
 
-bool OutlierFilter::isAnomaly(double valor) {
-    janela.push_back(valor);
-
-    if (janela.size() < (size_t)tamanhoJanela)
-        return false;
-
+bool OutlierFilter::isAnomaly(const std::vector<double>& janela, double valor) {
     double media = std::accumulate(janela.begin(), janela.end(), 0.0) / janela.size();
 
     double soma = 0.0;
@@ -18,9 +13,7 @@ bool OutlierFilter::isAnomaly(double valor) {
         soma += (v - media) * (v - media);
 
     double desvio = std::sqrt(soma / janela.size());
-
-    if (janela.size() > (size_t)tamanhoJanela)
-        janela.pop_front();
+    if (desvio == 0) return false;
 
     double z = std::abs((valor - media) / desvio);
     return z > limiteZ;
