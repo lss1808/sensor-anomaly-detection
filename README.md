@@ -1,139 +1,208 @@
-# Detecção de Anomalias em Sensores Industriais (C++)
+🛰️ Detecção de Anomalias em Sensores Industriais (C++ + Qt)
 
-Sistema para detecção automática de anomalias em dados de sensores industriais,
-com foco em manutenção preditiva e geração de relatório visual em Excel.
+Sistema completo para detecção automática de anomalias em dados de sensores industriais, com:
 
-O projeto simula o mesmo princípio utilizado em sistemas reais de diagnóstico
-de sensores em processos industriais.
+Processamento estatístico em tempo real (streaming)
 
----
+Interface gráfica (GUI) em Qt
 
-## 🎯 Foco do Projeto
+Geração automática de relatório Excel
 
-- Detecção de falhas iniciais
-- Identificação de ruídos e interferências
-- Monitoramento contínuo do processo
-- Base para manutenção preditiva
+Estrutura preparada para expansão (drift, ruído, classificação, ML futuramente)
 
----
+O projeto simula o mesmo princípio utilizado em sistemas reais de diagnóstico de sensores em ambientes industriais e manutenção preditiva.
 
-## 🧠 Conceito Aplicado
+🎯 Objetivo do Projeto
 
-Diferente de abordagens ingênuas que recalculam média e desvio padrão a cada leitura (O(n²)) e contaminam a análise com o próprio valor avaliado, este projeto:
+Este projeto demonstra, de forma prática e profissional:
 
-- Avalia a anomalia **antes** de inserir o valor na janela estatística
-- Utiliza **janela deslizante eficiente**
-- Processa os dados em modo **streaming**, amostra por amostra
-- Aplica o método estatístico **Z-Score**
+Como detectar falhas iniciais em sensores
 
-Esse é o mesmo princípio utilizado em sistemas reais de diagnóstico de sensores.
+Como tratar ruídos e interferências
 
----
+Como fazer monitoramento contínuo em streaming
 
-## 🚀 Principais Características
+Como gerar relatórios automáticos
 
-- Detecção de outliers com **Z-Score**
-- Janela deslizante eficiente
-- Processamento em tempo real
-- Leitura robusta de CSV
-- Geração automática de relatório Excel
-- Destaque visual das anomalias
-- Estrutura preparada para expansão (ruído, drift, classificação)
+Como integrar processamento estatístico + interface gráfica
 
----
+🧠 Conceito Estatístico Aplicado (Diferencial do Projeto)
 
-## 📁 Estrutura do Projeto
+Diferente de abordagens ingênuas que:
 
-```
+❌ Recalculam média/desvio incluindo o próprio valor avaliado
+❌ Têm complexidade O(n²)
+❌ Contaminam a estatística com o outlier
+
+Este sistema:
+
+✅ Avalia a anomalia antes de inserir na janela
+✅ Usa janela deslizante eficiente O(1)
+✅ Processa dados em streaming, amostra por amostra
+✅ Aplica o método estatístico Z-Score real de sistemas industriais
+
+🖥️ Interface Gráfica (Qt GUI)
+
+A GUI permite:
+
+Visualizar os valores do sensor em gráfico
+
+Destacar visualmente as anomalias
+
+Executar o detector de forma interativa
+
+Tornar o projeto visual e profissional
+
+📁 Estrutura Atual do Projeto
 sensor-anomaly-detection/
 │
 ├── data/
 │   └── sensor_data.csv
 │
+├── output/
+│   └── anomaly_report.xlsx (gerado automaticamente)
+│
 ├── src/
 │   ├── main.cpp
+│   ├── gui_main.cpp
 │   ├── outlier_filter.cpp
-│   └── outlier_filter.h
+│   ├── outlier_filter.h
+│   └── sensor_generator.cpp
 │
-├── output/        # Gerado automaticamente
+├── detector_gui.pro
+├── sensor-anomaly-detection.pro
 └── README.md
-```
 
----
+🛠 Tecnologias Utilizadas
 
-## 🛠 Tecnologias Utilizadas
+C++17
 
-- C++
-- MSYS2 / MinGW64
-- libxlsxwriter (geração do Excel)
-- Git e GitHub
+Qt 6 (Widgets)
 
----
+MSYS2 UCRT64
 
-## ⚙️ Requisitos
+MinGW
 
-Instalar no MSYS2 MINGW64:
+libxlsxwriter (geração do Excel)
 
-```bash
-pacman -S mingw-w64-x86_64-libxlsxwriter
-```
+Git e GitHub
 
----
+⚙️ Ambiente Necessário (MSYS2 UCRT64)
 
-## ▶️ Como Compilar (na raiz do projeto)
+⚠️ MUITO IMPORTANTE: usar UCRT64, não MINGW64
 
-```bash
-g++ src/main.cpp src/outlier_filter.cpp -o detector -std=c++17 -lxlsxwriter
-```
+Abra o terminal:
 
----
+MSYS2 UCRT64
 
-## ▶️ Como Executar
 
-```bash
-./detector
-```
+Instale as dependências:
 
-O programa irá:
+pacman -S mingw-w64-ucrt-x86_64-qt6 \
+         mingw-w64-ucrt-x86_64-libxlsxwriter \
+         mingw-w64-ucrt-x86_64-toolchain \
+         mingw-w64-ucrt-x86_64-make
 
-1. Ler `data/sensor_data.csv`
-2. Detectar anomalias
-3. Criar a pasta `output`
-4. Gerar automaticamente:
+▶️ Como Compilar o Projeto (forma correta)
 
-```
+Na raiz do projeto:
+
+qmake detector_gui.pro
+mingw32-make
+
+
+Isso irá gerar:
+
+release/detector_gui.exe
+
+▶️ Como Executar
+./release/detector_gui.exe
+
+
+A interface gráfica abrirá.
+
+🧪 O que acontece quando o programa roda
+
+Lê data/sensor_data.csv
+
+Processa os dados em streaming
+
+Detecta anomalias com Z-Score
+
+Exibe o gráfico na GUI
+
+Gera automaticamente:
+
 output/anomaly_report.xlsx
-```
 
----
-
-## 📊 Relatório Excel Gerado
+📊 Relatório Excel Gerado
 
 O Excel contém:
 
-- Índice do ponto
-- Valor do sensor
-- Indicação de anomalia
-- Linhas anômalas destacadas em vermelho
+Índice da amostra
 
-> Caso o Windows abra com outro programa, use **Abrir com → Excel**.
+Valor do sensor
 
----
+Indicação de anomalia
 
-## 🧮 Algoritmo Utilizado
+Linhas anômalas destacadas em vermelho
 
-Z-Score aplicado em janela deslizante:
+Abra com Microsoft Excel para visualizar corretamente.
 
-\[
-z = \frac{x - \mu}{\sigma}
-\]
+🧮 Algoritmo Utilizado
 
-Valores com |z| > 3 são considerados anomalias.
+Z-Score em janela deslizante:
 
----
+𝑧
+=
+𝑥
+−
+𝜇
+𝜎
+z=
+σ
+x−μ
+	​
 
-## 🚀 Status
 
-✅ Funcionando  
-✅ Relatório Excel automático  
-✅ Pronto para expansão
+Regra:
+
+|z| > 3  →  Anomalia
+
+🚀 Como Gerar Novos Dados de Sensor
+
+O projeto possui um gerador de sensores:
+
+g++ src/sensor_generator.cpp -o sensor_generator
+./sensor_generator
+
+
+Isso atualiza o arquivo:
+
+data/sensor_data.csv
+
+🧩 Possibilidades de Expansão
+
+O projeto foi estruturado para permitir facilmente:
+
+Detecção de drift
+
+Classificação de tipo de falha
+
+Integração com banco de dados
+
+Integração com IA / Machine Learning
+
+Dashboard industrial
+
+✅ Status Atual
+Recurso	Status
+Detector estatístico	✅
+Janela deslizante eficiente	✅
+GUI Qt funcional	✅
+Geração automática de Excel	✅
+Gerador de dados de sensor	✅
+Estrutura profissional de projeto	✅
+👨‍💻 Autor
+
+Projeto desenvolvido para fins acadêmicos e demonstração prática de técnicas reais de diagnóstico de sensores industriais.
